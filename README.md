@@ -9,6 +9,6 @@ Neste trabalho será realizado o aplicativo "WhatsMyApp", uma versão simples do
 - Opção de apagar mensagem (para todos)
 
 ## Observações
--Será baseado em uma comunicação entre dois clientes (computadores)
--Utilizará um servidor
--Será baseado em TCP
+- Será baseado em uma comunicação entre dois clientes (computadores)
+- Utilizará um servidor
+- Será baseado em TCP
