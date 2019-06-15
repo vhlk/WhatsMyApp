@@ -11,4 +11,5 @@ Neste trabalho será realizado o aplicativo "WhatsMyApp", uma versão simples do
 ## Observações
 - Será baseado em uma comunicação entre dois clientes (computadores)
 - Utilizará um servidor
+- Cada um dos clientes e o servidor deverão funcionar em 3 computadores diferentes
 - Será baseado em TCP
