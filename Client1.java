@@ -7,7 +7,7 @@ import java.util.Scanner;
 public class Client1 {
     public static void main(String args[]) throws IOException {
     	int port = 8888;//Porta do servidor
-        String address = "localhost";//host do servidor
+        String address = "G2C15";//host do servidor
         
         try {
             Socket socket = new Socket(address, port);
@@ -29,8 +29,7 @@ public class Client1 {
         }catch(Exception e) {
             e.printStackTrace();
         }
-        
-
+       
     }
 }
 
@@ -42,8 +41,8 @@ public class Client1 {
     	
         try{
             String serverMsg;
-        	int port = 1248;//Porta do cliente
-            String address = "localhost";//host do cliente
+        	int port = 8421;//Porta do cliente
+            String address = "G2C15";//host do servidor
             
             DataInputStream inputStream;
             Socket socket = new Socket(address, port);
@@ -72,7 +71,7 @@ class ackThread extends Thread {
 	        try{
 	            DataOutputStream outputStream;
 	        	int port = 8888;//Porta do servidor
-	            String address = "localhost";//host do servidor
+	            String address = "G2C15";//host do servidor
 	            
 	            Socket socket = new Socket(address, port);
 	            
