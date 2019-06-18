@@ -51,6 +51,7 @@ public class Client1 {
             while (true){
             	inputStream = new DataInputStream(socket.getInputStream());
             	serverMsg = inputStream.readUTF();
+            	System.out.println(serverMsg);
                 ackThread at = new ackThread();
             	at.start();
             }
