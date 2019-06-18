@@ -50,7 +50,9 @@ public class Client1 {
             
             while (true){
             	inputStream = new DataInputStream(socket.getInputStream());
-            	serverMsg = inputStream.readUTF(); 
+            	serverMsg = inputStream.readUTF();
+                ackThread at = new ackThread();
+            	at.start();
             }
             
         }catch(Exception e){
@@ -58,4 +60,27 @@ public class Client1 {
         }
         
     }
+}
+ 
+class ackThread extends Thread {
+
+	    public ackThread(){}
+
+	    public void run(){
+	    	
+	        try{
+	            DataOutputStream outputStream;
+	        	int port = 8888;//Porta do servidor
+	            String address = "localhost";//host do servidor
+	            
+	            Socket socket = new Socket(address, port);
+	            
+	            outputStream = new DataOutputStream(socket.getOutputStream());
+	            outputStream.writeUTF("1");
+	         
+	        }catch(Exception e){
+	            e.printStackTrace();
+	        }
+	        
+	    }
 }
