@@ -1,5 +1,3 @@
-package teste;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.BindException;
@@ -25,9 +23,9 @@ public class Server {
 				strData = inputStream.readUTF();
 				strData = strData.trim();
 				System.out.println("Texto recebido do cliente: " + strData);
-				if (strData.charAt(0) == 1) {
+				if (strData.charAt(0) == 1) { //1 -> ack p/ cliente
 					ans = "ack";
-				} else if (strData.charAt(0) == 2) {
+				} else if (strData.charAt(0) == 2) { //2 -> apagar
 					ans = "apagar" + strData.substring(1, strData.length());
 				} else if (strData.contains("InfraCom")) {
 					ans = "IF678, a disciplina de InfraEstrutura de Comunicacao ministrada pelo professor Paulo Goncalves ";

@@ -1,5 +1,3 @@
-package teste;
-
 import java.io.IOException;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -11,7 +9,7 @@ public class Teste {
 
 	public static void main(String args[]) throws IOException {
 		int port = 8888;// Porta do servidor
-		String address = "localhost";// host do servidor
+		String address = "G2C15";// host do servidor
 
 		try {
 			Socket socket = new Socket(address, port);
@@ -55,7 +53,7 @@ class receiveThread extends Thread {
 		try {
 			String serverMsg;
 			int port = 8421;// Porta do cliente
-			String address = "localhost";// host do servidor
+			String address = "G2C15";// host do servidor
 
 			DataInputStream inputStream;
 			Socket socket = new Socket(address, port);
@@ -63,8 +61,9 @@ class receiveThread extends Thread {
 			while (true) {
 				inputStream = new DataInputStream(socket.getInputStream());
 				serverMsg = inputStream.readUTF();
+				serverMsg.trim();
 				if (serverMsg.contains("apagar")) {
-					serverMsg.trim();
+					for (int i=0;i<50;i++) System.out.println();
 					Mensagens.mensagens.remove(parseInteger(serverMsg.substring(6, serverMsg.length())));
 				}
 				else {
@@ -97,7 +96,7 @@ class ackThread extends Thread {
 		try {
 			DataOutputStream outputStream;
 			int port = 8888;// Porta do servidor
-			String address = "localhost";// host do servidor
+			String address = "G2C15";// host do servidor
 
 			Socket socket = new Socket(address, port);
 
