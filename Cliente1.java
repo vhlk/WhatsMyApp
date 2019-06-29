@@ -103,7 +103,10 @@ class ReceiveThread extends Thread {
 				input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				serverMsg = input.readLine();
 				serverMsg = serverMsg.trim();
-				if (serverMsg.charAt(0) == '3') {
+				if (serverMsg.charAt(0) == '5') { //ack do server
+					System.out.println("Mensagem recebida pelo servidor!");
+				}
+				if (serverMsg.charAt(0) == '3') { //apagar
 					for (int i = 0; i < 100; i++) System.out.println();
 					int posicaoSerRemovida = Integer.parseInt(serverMsg.substring(1, serverMsg.length()));
 					Mensagens.mensagens.removeElementAt(posicaoSerRemovida);
@@ -142,6 +145,7 @@ class ACKMensagemRecebidaCliente extends Thread {
 			Socket socket = new Socket(address, port);
 
 			PrintStream saida = new PrintStream(socket.getOutputStream());
+			
 			saida.println("1");
 
 		} catch (Exception e) {

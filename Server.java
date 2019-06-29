@@ -10,6 +10,16 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 public class Server {
+	
+	/*
+	 * Flags utilizadas: 
+	 *  1: confirmação de recebimento pelo cliente
+	 *  2: mensagem de pedido de apagar mensagem
+	 *  3: apagar mensagem (seguido pela posicao a ser apagada)
+	 *  4: sair da conversa
+	 *  5: confirmação recebimento pelo servidor
+	 */
+	
 	public static Vector<String> mensagens = new Vector<String>();
 	private Socket conexao;
 	private static Vector CLIENTES;
@@ -133,6 +143,9 @@ class ReceiveMsg extends Thread
 			{
 				ACKMensagemRecebidaServer ack = new ACKMensagemRecebidaServer();
 				ack.start();
+				if (mensagem.charAt(0) == '1') {
+					System.out.println("Mensagem Recebida pelo Cliente!");
+				}
 				if (mensagem.charAt(0) == '2') {
 					int posicaoRemover = Integer.parseInt(mensagem.substring(1, mensagem.length()));
 					String removido = ReceiveMsg.mensagens.remove(posicaoRemover);
