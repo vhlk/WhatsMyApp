@@ -56,6 +56,7 @@ public class Cliente1 {
 					System.out.println("Digite a posição da mensagem a ser apagada, por favor:");
 					flag = '2'; // flag para apagar
 					int posicao = in.nextInt();
+					in.nextLine();
 					clientMsg = Integer.toString(posicao);
 				}
 				if (clientMsg.equals("quero sair")) {
