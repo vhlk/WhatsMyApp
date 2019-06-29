@@ -25,14 +25,15 @@ import java.util.Vector;
  *		Victor Hugo de Lima Kunst
  */
 
-
 public class Cliente1 {
-	
+
 	/*
-	 * Flags utilizadas:
-	 * 		1: confirmação de recebimento pelo cliente
-	 * 		2: mensagem de pedido de apagar mensagem
-	 * 		3: apagar mensagem (seguido pela posicao a ser apagada)
+	 * Flags utilizadas: 
+	 *  1: confirmação de recebimento pelo cliente
+	 *  2: mensagem de pedido de apagar mensagem
+	 *  3: apagar mensagem (seguido pela posicao a ser apagada)
+	 *  4: sair da conversa
+	 *  5: confirmação recebimento pelo servidor
 	 */
 
 	public static void main(String args[]) throws IOException {
@@ -44,7 +45,7 @@ public class Cliente1 {
 			char flag = '0';
 			Scanner in = new Scanner(System.in);
 			String clientMsg;
-			//DataOutputStream outputStream;
+			// DataOutputStream outputStream;
 			Mensagens mensagens = new Mensagens();
 			ReceiveThread rt = new ReceiveThread();
 			rt.start();
@@ -53,21 +54,25 @@ public class Cliente1 {
 				clientMsg = in.nextLine();
 				if (clientMsg.equals("quero apagar")) {
 					System.out.println("Digite a posição da mensagem a ser apagada, por favor:");
-					flag = '2'; //flag para apagar
+					flag = '2'; // flag para apagar
 					int posicao = in.nextInt();
 					clientMsg = Integer.toString(posicao);
 				}
+				if (clientMsg.equals("quero sair")) {
+					flag = '4';
+					System.out.println("Saiu da conversa!");
+				}
 				/*
-				outputStream = new DataOutputStream(socket.getOutputStream());
-				outputStream.writeUTF(flag + clientMsg);
-				outputStream.flush();
-				*/
+				 * outputStream = new DataOutputStream(socket.getOutputStream());
+				 * outputStream.writeUTF(flag + clientMsg); outputStream.flush();
+				 */
 				PrintStream saida = new PrintStream(socket.getOutputStream());
 				saida.println(flag + clientMsg);
-				/* imprimir todas as mensagens do cliente
-				for (int i = 0; i < mensagens.mensagens.size(); i++) {
-					System.out.println(mensagens.mensagens.get(i));
-				} */
+				/*
+				 * imprimir todas as mensagens do cliente for (int i = 0; i <
+				 * mensagens.mensagens.size(); i++) {
+				 * System.out.println(mensagens.mensagens.get(i)); }
+				 */
 				flag = '0';
 			}
 
@@ -91,7 +96,7 @@ class ReceiveThread extends Thread {
 			String address = "localhost";// host do servidor
 
 			BufferedReader input;
-			//DataInputStream inputStream;
+			// DataInputStream inputStream;
 			Socket socket = new Socket(address, port);
 
 			while (true) {
@@ -99,17 +104,18 @@ class ReceiveThread extends Thread {
 				serverMsg = input.readLine();
 				serverMsg = serverMsg.trim();
 				if (serverMsg.charAt(0) == '3') {
-					for (int i=0;i<100;i++) System.out.println();
-					Mensagens.mensagens.removeElementAt(Integer.parseInt(serverMsg.substring(1, serverMsg.length())));
-					System.out.println("*"+Integer.parseInt(serverMsg.substring(1, serverMsg.length())));
-					for (int i=0;i<Mensagens.mensagens.size();i++) {
+					for (int i = 0; i < 100; i++) System.out.println();
+					int posicaoSerRemovida = Integer.parseInt(serverMsg.substring(1, serverMsg.length()));
+					Mensagens.mensagens.removeElementAt(posicaoSerRemovida);
+					for (int i = 0; i < Mensagens.mensagens.size(); i++) {
 						System.out.println(Mensagens.mensagens.elementAt(i));
 					}
-				}
-				else {
-					Mensagens.mensagens.addElement(serverMsg);
+				} else {
+					if (!serverMsg.equals("Conectado, por favor digite seu nome:")) {
+						Mensagens.mensagens.addElement(serverMsg);
+					}
 					System.out.println(serverMsg);
-					ACKMensagemRecebida at = new ACKMensagemRecebida();
+					ACKMensagemRecebidaCliente at = new ACKMensagemRecebidaCliente();
 					at.start();
 				}
 			}
@@ -121,14 +127,15 @@ class ReceiveThread extends Thread {
 	}
 }
 
-class ACKMensagemRecebida extends Thread {
+class ACKMensagemRecebidaCliente extends Thread {
 
-	public ACKMensagemRecebida() {}
+	public ACKMensagemRecebidaCliente() {
+	}
 
 	public void run() {
 
 		try {
-			//DataOutputStream outputStream;
+			// DataOutputStream outputStream;
 			int port = 8888;// Porta do servidor
 			String address = "localhost";// host do servidor
 

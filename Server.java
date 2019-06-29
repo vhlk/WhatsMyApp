@@ -6,6 +6,7 @@ import java.io.PrintStream;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Vector;
 
 public class Server {
@@ -101,14 +102,16 @@ public class Server {
 
 class ReceiveMsg extends Thread
 {
-	public static Vector<String> mensagens = new Vector<String>();
-	public static Vector<String> usuarios = new Vector<String>();
+	public static ArrayList<String> mensagens;
+	public static ArrayList<String> usuarios;
 	
 	private Socket conexaoEntrada;
 	private Socket conexaoSaida;
 	
 	public ReceiveMsg(Socket conexaoEntrada, Socket conexaoSaida)
 	{
+		this.mensagens = new ArrayList<String>();
+		this.usuarios = new ArrayList<String>();
 		this.conexaoEntrada = conexaoEntrada;
 		this.conexaoSaida = conexaoSaida;
 	}
@@ -126,18 +129,20 @@ class ReceiveMsg extends Thread
 			String mensagem = "";
 			mensagem = entrada.readLine();
 			int cont = 0;
-			while(mensagem != null)
+			while(mensagem.charAt(0) != '4')
 			{
-				ackThreadS ack = new ackThreadS();
+				ACKMensagemRecebidaServer ack = new ACKMensagemRecebidaServer();
 				ack.start();
 				if (mensagem.charAt(0) == '2') {
-					mensagens.removeElementAt(Integer.parseInt(mensagem.substring(1, mensagem.length())));
-					saida.println("3"+Integer.parseInt(mensagem.substring(1, mensagem.length())));
-					cont--;
+					int posicaoRemover = Integer.parseInt(mensagem.substring(1, mensagem.length()));
+					String removido = ReceiveMsg.mensagens.remove(posicaoRemover);
+					System.out.println("Mensagem removida: "+removido);
+					saida.println("3"+posicaoRemover);
+					cont = cont - 2;
 				}
 				else {
-					mensagens.add(mensagem);
-					System.out.println(mensagens.get(cont));
+					ReceiveMsg.mensagens.add(mensagem);
+					System.out.println(ReceiveMsg.mensagens.get(cont));
 					saida.println(mensagem);
 				}
 				mensagem = entrada.readLine();
@@ -147,27 +152,29 @@ class ReceiveMsg extends Thread
 		}
 		catch(Exception e)
 		{
+			System.out.println(e.getMessage());
 			System.out.println("Deu erro!");
 		}
 	}
 
 }
-class ackThreadS extends Thread {
+class ACKMensagemRecebidaServer extends Thread {
 
-	public ackThreadS() {
+	public ACKMensagemRecebidaServer() {
 	}
 
 	public void run() {
 
 		try {
-			DataOutputStream outputStream;
+			//DataOutputStream outputStream;
+			PrintStream ack;
 			int port = 8888;// Porta do servidor
 			String address = "localhost";// host do servidor
 
 			Socket socket = new Socket(address, port);
 
-			outputStream = new DataOutputStream(socket.getOutputStream());
-			outputStream.writeUTF("1");
+			ack = new PrintStream(socket.getOutputStream());
+			ack.println("5");
 
 		} catch (Exception e) {
 			e.printStackTrace();
