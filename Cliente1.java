@@ -96,13 +96,12 @@ class ReceiveThread extends Thread {
 
 			while (true) {
 				input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-				System.out.println("**");
 				serverMsg = input.readLine();
-				System.out.println("*"); //coloquei esses prints para mostrar que ele nao recebe mensagem do server
+				serverMsg = serverMsg.trim();
 				if (serverMsg.charAt(0) == '3') {
-					for (int i=0;i<50;i++) System.out.println();
-					Mensagens.mensagens.remove(Integer.parseInt(serverMsg.substring(1, serverMsg.length())));
-					System.out.println(Integer.parseInt(serverMsg.substring(1, serverMsg.length())));
+					for (int i=0;i<100;i++) System.out.println();
+					Mensagens.mensagens.removeElementAt(Integer.parseInt(serverMsg.substring(1, serverMsg.length())));
+					System.out.println("*"+Integer.parseInt(serverMsg.substring(1, serverMsg.length())));
 					for (int i=0;i<Mensagens.mensagens.size();i++) {
 						System.out.println(Mensagens.mensagens.elementAt(i));
 					}
@@ -113,7 +112,6 @@ class ReceiveThread extends Thread {
 					ACKMensagemRecebida at = new ACKMensagemRecebida();
 					at.start();
 				}
-				System.out.println("***");
 			}
 
 		} catch (Exception e) {

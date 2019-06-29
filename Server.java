@@ -52,11 +52,10 @@ public class Server {
 					ans = "Mensagem recebida!";
 				}
 				*/
-				ReceiveMsg t = new ReceiveMsg(socketIn);
+				ReceiveMsg t = new ReceiveMsg(socketIn, socketOut);
 				t.start();
 				PrintStream saida = new PrintStream(socketOut.getOutputStream());
 				//outputStream = new DataOutputStream(socketOut.getOutputStream());
-				saida.println("Recebi");
 				System.out.println("Enviado");
 				
 			}
@@ -105,21 +104,23 @@ class ReceiveMsg extends Thread
 	public static Vector<String> mensagens = new Vector<String>();
 	public static Vector<String> usuarios = new Vector<String>();
 	
-	private Socket conexao;
+	private Socket conexaoEntrada;
+	private Socket conexaoSaida;
 	
-	public ReceiveMsg(Socket conexao)
+	public ReceiveMsg(Socket conexaoEntrada, Socket conexaoSaida)
 	{
-		this.conexao = conexao;
+		this.conexaoEntrada = conexaoEntrada;
+		this.conexaoSaida = conexaoSaida;
 	}
 	
 	public void run()
 	{
 		try
 		{
-			BufferedReader entrada = new BufferedReader(new InputStreamReader(this.conexao.getInputStream()));
-			PrintStream saida = new PrintStream(this.conexao.getOutputStream());
+			BufferedReader entrada = new BufferedReader(new InputStreamReader(this.conexaoEntrada.getInputStream()));
+			PrintStream saida = new PrintStream(this.conexaoSaida.getOutputStream());
 
-			saida.println("Conectado");
+			saida.println("Conectado, por favor digite seu nome:");
 			String nome = entrada.readLine();
 			usuarios.add(nome);
 			String mensagem = "";
@@ -129,13 +130,15 @@ class ReceiveMsg extends Thread
 			{
 				ackThreadS ack = new ackThreadS();
 				ack.start();
-				if (mensagem.charAt(0) == '3') {
-					mensagens.remove(Integer.parseInt(mensagem.substring(1, mensagem.length())));
+				if (mensagem.charAt(0) == '2') {
+					mensagens.removeElementAt(Integer.parseInt(mensagem.substring(1, mensagem.length())));
+					saida.println("3"+Integer.parseInt(mensagem.substring(1, mensagem.length())));
 					cont--;
 				}
 				else {
 					mensagens.add(mensagem);
 					System.out.println(mensagens.get(cont));
+					saida.println(mensagem);
 				}
 				mensagem = entrada.readLine();
 				cont++;
