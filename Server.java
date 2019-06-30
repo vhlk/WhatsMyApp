@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import com.sun.glass.ui.Timer;
 
 public class Server {
 
@@ -22,6 +21,8 @@ public class Server {
 	 * 		4: sair da conversa 
 	 * 		5: confirmação recebimento pelo servidor
 	 * 		6: lido pelo cliente
+	 * 		7: reconectar a conversa
+	 * 		8: não faz nada
 	 */
 
 	public static Vector<String> mensagens = new Vector<String>();
@@ -83,7 +84,6 @@ class ReceiveMsg extends Thread {
 			String nome = entrada.readLine();
 			nome = nome.substring(1, nome.length());
 			saida.println("Pronto, comece a mandar suas mensagens!");
-			Timer timer;
 			for(int i = 0; i <  MensagensServidor.mensagens.size(); i++)
 			{
 				saida.println(MensagensServidor.mensagens.elementAt(i));
@@ -94,16 +94,26 @@ class ReceiveMsg extends Thread {
 			String mensagem = "";
 			mensagem = entrada.readLine();
 			int cont = 0;
-			while (mensagem.charAt(0) != '4') {
-				if (mensagem.charAt(0) == '6') {
+			boolean saiu = false;
+			while (true) {
+				if (mensagem.charAt(0) == '8') {} //8: não faz nada
+				else if (mensagem.charAt(0) == '7') {  //7: reconectar a conversa
+					saiu = false;
+					System.out.println("Cliente retornou!");
+				}
+				else if (mensagem.charAt(0) == '4') {  //4: sair da conversa 
+					saiu = true;
+					System.out.println("Cliente saiu!");
+				}
+				else if (!saiu && mensagem.charAt(0) == '6') {  //6: lido pelo cliente
 					sendMessage(saida, nome, mensagem);
 					System.out.println("Mensagem lida pelo cliente!");
 				}
-				else if (mensagem.charAt(0) == '1') {
+				else if (!saiu && mensagem.charAt(0) == '1') {  //1: confirmação de recebimento pelo cliente
 					sendMessage(saida, nome, mensagem);
 					System.out.println("Mensagem recebida pelo cliente!");
 				}
-				else if (mensagem.charAt(0) == '2') {
+				else if (!saiu && mensagem.charAt(0) == '2') {  //2: mensagem de pedido de apagar mensagem
 					int posicaoRemover = Integer.parseInt(mensagem.substring(1, mensagem.length()));
 					String removido = MensagensServidor.mensagens.remove(posicaoRemover);
 					System.out.println("Mensagem removida: " + removido);
@@ -118,11 +128,12 @@ class ReceiveMsg extends Thread {
 						clienteMandar.println("3" + posicaoRemover);
 					}
 					cont--;
-				} else {
+				} 
+				else if (!saiu){
 					PrintStream ack = new PrintStream(conexaoSaida.getOutputStream());
 					ack.println("5");
 					ReceiveMsg.mensagens.add(mensagem);
-					MensagensServidor.mensagens.add(mensagem);
+					MensagensServidor.mensagens.add(mensagem.charAt(0)+nome+": "+mensagem.substring(1, mensagem.length()));
 					System.out.println("Mensagem recebida: " + ReceiveMsg.mensagens.lastElement());
 					//saida.println(mensagem);
 					sendMessage(saida, nome  + ": " , mensagem);
@@ -130,7 +141,7 @@ class ReceiveMsg extends Thread {
 				}
 				mensagem = entrada.readLine();
 			}
-			System.out.println("Sai da conversa");
+			//System.out.println("Sai da conversa");
 		} catch (Exception e) {
 			System.err.println("Deu erro: "+e.getMessage());
 		}

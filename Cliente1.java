@@ -26,7 +26,7 @@ import java.util.Vector;
  */
 
 public class Cliente1 {
-
+	public static boolean saiu;
 	/*
 	 * Flags utilizadas: 
 	 * 		1: confirmação de recebimento pelo cliente 
@@ -35,6 +35,8 @@ public class Cliente1 {
 	 * 		4: sair da conversa 
 	 * 		5: confirmação recebimento pelo servidor
 	 * 		6: lido pelo cliente
+	 * 		7: reconectar a conversa
+	 * 		8: não faz nada
 	 */
 
 	public static void main(String args[]) throws IOException {
@@ -52,14 +54,17 @@ public class Cliente1 {
 			rt.start();
 			int cont = 0;
 			String nome = "";
+			Cliente1.saiu = false;
+			int posicaoUltimaMensagem = 0;
 
 			while (true) {
+				PrintStream saida = new PrintStream(socket.getOutputStream());
 				boolean podeApagar =  true;
 				clientMsg = in.nextLine();
 				if (cont == 0) {
 					nome = clientMsg;
 				}
-				if (clientMsg.equals("quero apagar")) {
+				else if (!Cliente1.saiu && clientMsg.equals("quero apagar")) {
 					System.out.println("Digite a posição da mensagem a ser apagada, por favor:");
 					flag = '2'; // flag para apagar
 					int posicao = in.nextInt();
@@ -76,11 +81,23 @@ public class Cliente1 {
 				else if (clientMsg.equals("quero sair")) {
 					flag = '4';
 					System.out.println("Saiu da conversa!");
+					posicaoUltimaMensagem = Mensagens.mensagens.size();
+					Cliente1.saiu = true;
 				}
-				else if (cont != 0){
+				else if (clientMsg.equals("quero me reconectar")) {
+					System.out.println("Reconectado com sucesso!");
+					saida.println("7");
+					flag = '8';
+					for (int i = posicaoUltimaMensagem; i < Mensagens.mensagens.size();i++) {
+						System.out.println(Mensagens.mensagens.elementAt(i).substring(1, Mensagens.mensagens.elementAt(i).length()));
+						saida.println("1");
+						saida.println("6");
+					}
+					Cliente1.saiu = false;
+				}
+				else if (!Cliente1.saiu && cont != 0){
 					Mensagens.mensagens.add('y'+nome+": "+clientMsg);
 				}
-				PrintStream saida = new PrintStream(socket.getOutputStream());
 				if (podeApagar) saida.println(flag + clientMsg);
 				flag = '0';
 				cont = 1;
@@ -104,7 +121,7 @@ class ReceiveThread extends Thread {
 
 		try {
 			String serverMsg;
-			int port = 8421;// Porta do cliente
+			int port = 8422;// Porta do cliente
 			String address = "localhost";// host do servidor
 
 			BufferedReader input;
@@ -124,7 +141,7 @@ class ReceiveThread extends Thread {
 				}
 				else if (serverMsg != null && serverMsg.length() > 0 && serverMsg.charAt(0) == '3') { // apagar
 					int posicaoSerRemovida = Integer.parseInt(serverMsg.substring(1, serverMsg.length()));
-					System.out.println(Mensagens.mensagens.remove(posicaoSerRemovida));
+					Mensagens.mensagens.removeElementAt(posicaoSerRemovida);
 					for (int i = 0; i < 100; i++)
 						System.out.println();
 					for (int i = 0; i < Mensagens.mensagens.size(); i++) {
@@ -139,7 +156,7 @@ class ReceiveThread extends Thread {
 						ack.println("6");
 						serverMsg = serverMsg.substring(1, serverMsg.length());
 					}
-					System.out.println(serverMsg);
+					if (!Cliente1.saiu) System.out.println(serverMsg);
 				}
 			}
 
