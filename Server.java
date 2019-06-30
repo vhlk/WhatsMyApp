@@ -32,7 +32,7 @@ public class Server {
 	public static void main(String[] args) {
 		int port = 8888;
 		int porta = 8421;
-        Clientes clientes = new Clientes();
+		Clientes clientes = new Clientes();
 		try {
 			ServerSocket tmpSocketIn = new ServerSocket(port);
 
@@ -87,24 +87,30 @@ class ReceiveMsg extends Thread {
 			int cont = 0;
 			while (mensagem.charAt(0) != '4') {
 				if (mensagem.charAt(0) == '6') {
-					System.out.println("Mensagem lida pelo cliente!");
+					sendMessage(saida, nome, mensagem);
+					//System.out.println("Mensagem lida pelo cliente!");
 				}
 				else if (mensagem.charAt(0) == '1') {
+					sendMessage(saida, nome, mensagem);
 					System.out.println("Mensagem recebida pelo cliente!");
 				}
 				else if (mensagem.charAt(0) == '2') {
 					int posicaoRemover = Integer.parseInt(mensagem.substring(1, mensagem.length()));
 					String removido = ReceiveMsg.mensagens.remove(posicaoRemover);
 					System.out.println("Mensagem removida: " + removido);
-					saida.println("3" + posicaoRemover);
+					Enumeration<PrintStream> e = Clientes.clientes.elements();
+					while (e.hasMoreElements()) {
+						PrintStream clienteMandar = (PrintStream) e.nextElement();
+						clienteMandar.println("3" + posicaoRemover);
+					}
 					cont--;
 				} else {
 					PrintStream ack = new PrintStream(conexaoSaida.getOutputStream());
 					ack.println("5");
 					ReceiveMsg.mensagens.add(mensagem);
 					System.out.println("Mensagem recebida: " + ReceiveMsg.mensagens.lastElement());
-					saida.println(mensagem);
-					sendMensage(saida, nome  + ": " , mensagem);
+					//saida.println(mensagem);
+					sendMessage(saida, nome  + ": " , mensagem);
 					cont++;
 				}
 				mensagem = entrada.readLine();
@@ -114,26 +120,28 @@ class ReceiveMsg extends Thread {
 			System.err.println("Deu erro: "+e.getMessage());
 		}
 	}
-	public void sendMensage(PrintStream saida, String autor, String mensagem)
+	public void sendMessage(PrintStream saida, String autor, String mensagem)
 	{
-        Enumeration e = Clientes.clientes.elements();
-        while (e.hasMoreElements()) {
-            // obtém o fluxo de saída de um dos CLIENTES
-            PrintStream outroCLiente = (PrintStream) e.nextElement();
-            // envia para todos, menos para o próprio usuário
-            if (outroCLiente != saida) {
-            	char flag = mensagem.charAt(0);
-            	String dadoMensagem = mensagem.substring(1, mensagem.length());
-            	outroCLiente.println(flag + autor + dadoMensagem);
-            }
-        }
+		try {
+			Enumeration<PrintStream> e = Clientes.clientes.elements();
+			while (e.hasMoreElements()) {
+				// obtém o fluxo de saída de um dos CLIENTES
+				PrintStream outroCLiente = (PrintStream) e.nextElement();
+				// envia para todos, menos para o próprio usuário
+				if (outroCLiente != saida) {
+					char flag = mensagem.charAt(0);
+					String dadoMensagem = mensagem.substring(1, mensagem.length());
+					outroCLiente.println(flag + autor + dadoMensagem);
+				}
+			}
+		} catch (Exception e) { System.out.println(e.getMessage());}
 	}
 
 }
 class Clientes {
-	public static Vector clientes;
+	public static Vector<PrintStream> clientes;
 
 	public Clientes() {
-		this.clientes = new Vector();
+		this.clientes = new Vector<PrintStream>();
 	}
 }

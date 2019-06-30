@@ -65,6 +65,7 @@ public class Cliente1 {
 					System.out.println("Saiu da conversa!");
 				}
 				PrintStream saida = new PrintStream(socket.getOutputStream());
+				Mensagens.mensagens.add('y'+clientMsg);
 				saida.println(flag + clientMsg);
 				flag = '0';
 			}
@@ -87,7 +88,7 @@ class ReceiveThread extends Thread {
 
 		try {
 			String serverMsg;
-			int port = 8421;// Porta do cliente
+			int port = 8422;// Porta do cliente
 			String address = "localhost";// host do servidor
 
 			BufferedReader input;
@@ -99,14 +100,23 @@ class ReceiveThread extends Thread {
 				if (serverMsg.charAt(0) == '5') { // ack do server
 					System.out.println("Mensagem recebida pelo servidor!");
 				}
+				else if (serverMsg.charAt(0) == '1') {
+					System.out.println("Mensagem recebida!");
+				}
+				else if (serverMsg.charAt(0) == '6') {
+					System.out.println("Mensagem lida!");
+				}
 				else if (serverMsg.charAt(0) == '3') { // apagar
-					for (int i = 0; i < 100; i++)
-						System.out.println();
 					int posicaoSerRemovida = Integer.parseInt(serverMsg.substring(1, serverMsg.length()));
-					Mensagens.mensagens.removeElementAt(posicaoSerRemovida);
-					for (int i = 0; i < Mensagens.mensagens.size(); i++) {
-						System.out.println(Mensagens.mensagens.elementAt(i));
+					if (Mensagens.mensagens.elementAt(posicaoSerRemovida).charAt(0) == 'y') {
+						Mensagens.mensagens.removeElementAt(posicaoSerRemovida);
+						for (int i = 0; i < 100; i++)
+							System.out.println();
+						for (int i = 0; i < Mensagens.mensagens.size(); i++) {
+							System.out.println(Mensagens.mensagens.elementAt(i).substring(1, Mensagens.mensagens.elementAt(i).length()));
+						}
 					}
+					else System.err.println("Você não pode apagar uma mensagem que você não enviou!");
 				} else {
 					if (!serverMsg.equals("Conectado, por favor digite seu nome:")
 							&& !serverMsg.equals("Pronto, comece a mandar suas mensagens!")) {
@@ -114,6 +124,7 @@ class ReceiveThread extends Thread {
 						PrintStream ack = new PrintStream(socketSaida.getOutputStream());
 						ack.println("1");
 						ack.println("6");
+						serverMsg = serverMsg.substring(1, serverMsg.length());
 					}
 					System.out.println(serverMsg);
 				}
