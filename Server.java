@@ -18,6 +18,7 @@ public class Server {
 	 * 		3: apagar mensagem (seguido pela posicao a ser apagada) 
 	 * 		4: sair da conversa 
 	 * 		5: confirmação recebimento pelo servidor
+	 * 		6: lido pelo cliente
 	 */
 
 	public static Vector<String> mensagens = new Vector<String>();
@@ -83,8 +84,11 @@ class ReceiveMsg extends Thread {
 			mensagem = entrada.readLine();
 			int cont = 0;
 			while (mensagem.charAt(0) != '4') {
-				if (mensagem.charAt(0) == '1') {
-					System.out.println("Mensagem Recebida pelo Cliente!");
+				if (mensagem.charAt(0) == '6') {
+					System.out.println("Mensagem lida pelo cliente!");
+				}
+				else if (mensagem.charAt(0) == '1') {
+					System.out.println("Mensagem recebida pelo cliente!");
 				}
 				else if (mensagem.charAt(0) == '2') {
 					int posicaoRemover = Integer.parseInt(mensagem.substring(1, mensagem.length()));

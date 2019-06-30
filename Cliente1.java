@@ -34,11 +34,13 @@ public class Cliente1 {
 	 * 		3: apagar mensagem (seguido pela posicao a ser apagada) 
 	 * 		4: sair da conversa 
 	 * 		5: confirmação recebimento pelo servidor
+	 * 		6: lido pelo cliente
 	 */
 
 	public static void main(String args[]) throws IOException {
 		int port = 8888;// Porta do servidor
 		String address = "localhost";// host do servidor
+		char cliente = 'a';
 
 		try {
 			Socket socket = new Socket(address, port);
@@ -111,6 +113,7 @@ class ReceiveThread extends Thread {
 						Mensagens.mensagens.addElement(serverMsg);
 						PrintStream ack = new PrintStream(socketSaida.getOutputStream());
 						ack.println("1");
+						ack.println("6");
 					}
 					System.out.println(serverMsg);
 				}

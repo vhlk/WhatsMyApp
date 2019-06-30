@@ -1,5 +1,5 @@
 # WhatsMyApp
-Neste trabalho será realizado o aplicativo "WhatsMyApp", uma versão simples do WhatsApp com o objetivo de funcionar em computadores.
+Neste trabalho será realizado o aplicativo "WhatsMyApp", uma versão simples de um aplicativo de mensagens instantâneas com o objetivo de funcionar em computadores.
 
 
 ## Funções
