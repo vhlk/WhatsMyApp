@@ -50,10 +50,15 @@ public class Cliente1 {
 			Mensagens mensagens = new Mensagens();
 			ReceiveThread rt = new ReceiveThread(socket);
 			rt.start();
+			int cont = 0;
+			String nome = "";
 
 			while (true) {
 				boolean podeApagar =  true;
 				clientMsg = in.nextLine();
+				if (cont == 0) {
+					nome = clientMsg;
+				}
 				if (clientMsg.equals("quero apagar")) {
 					System.out.println("Digite a posição da mensagem a ser apagada, por favor:");
 					flag = '2'; // flag para apagar
@@ -72,12 +77,13 @@ public class Cliente1 {
 					flag = '4';
 					System.out.println("Saiu da conversa!");
 				}
-				else {
-					Mensagens.mensagens.add('y'+clientMsg);
+				else if (cont != 0){
+					Mensagens.mensagens.add('y'+nome+": "+clientMsg);
 				}
 				PrintStream saida = new PrintStream(socket.getOutputStream());
 				if (podeApagar) saida.println(flag + clientMsg);
 				flag = '0';
+				cont = 1;
 			}
 
 		} catch (Exception e) {
@@ -118,7 +124,7 @@ class ReceiveThread extends Thread {
 				}
 				else if (serverMsg.charAt(0) == '3') { // apagar
 					int posicaoSerRemovida = Integer.parseInt(serverMsg.substring(1, serverMsg.length()));
-					Mensagens.mensagens.removeElementAt(posicaoSerRemovida);
+					System.out.println(Mensagens.mensagens.remove(posicaoSerRemovida));
 					for (int i = 0; i < 100; i++)
 						System.out.println();
 					for (int i = 0; i < Mensagens.mensagens.size(); i++) {
