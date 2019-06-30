@@ -104,7 +104,7 @@ class ReceiveThread extends Thread {
 
 		try {
 			String serverMsg;
-			int port = 8422;// Porta do cliente
+			int port = 8421;// Porta do cliente
 			String address = "localhost";// host do servidor
 
 			BufferedReader input;
@@ -113,16 +113,16 @@ class ReceiveThread extends Thread {
 			while (true) {
 				input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				serverMsg = input.readLine();
-				if (serverMsg.charAt(0) == '5') { // ack do server
+				if (serverMsg != null && serverMsg.length() > 0 && serverMsg.charAt(0) == '5') { // ack do server
 					System.out.println("Mensagem recebida pelo servidor!");
 				}
-				else if (serverMsg.charAt(0) == '1') {
+				else if (serverMsg != null && serverMsg.length() > 0 && serverMsg.charAt(0) == '1') {
 					System.out.println("Mensagem recebida!");
 				}
-				else if (serverMsg.charAt(0) == '6') {
+				else if (serverMsg != null && serverMsg.length() > 0 && serverMsg.charAt(0) == '6') {
 					System.out.println("Mensagem lida!");
 				}
-				else if (serverMsg.charAt(0) == '3') { // apagar
+				else if (serverMsg != null && serverMsg.length() > 0 && serverMsg.charAt(0) == '3') { // apagar
 					int posicaoSerRemovida = Integer.parseInt(serverMsg.substring(1, serverMsg.length()));
 					System.out.println(Mensagens.mensagens.remove(posicaoSerRemovida));
 					for (int i = 0; i < 100; i++)
@@ -131,7 +131,7 @@ class ReceiveThread extends Thread {
 						System.out.println(Mensagens.mensagens.elementAt(i).substring(1, Mensagens.mensagens.elementAt(i).length()));
 					}
 				} else {
-					if (!serverMsg.equals("Conectado, por favor digite seu nome:")
+					if (serverMsg != null && serverMsg.length() > 0 && !serverMsg.equals("Conectado, por favor digite seu nome:")
 							&& !serverMsg.equals("Pronto, comece a mandar suas mensagens!")) {
 						Mensagens.mensagens.addElement(serverMsg);
 						PrintStream ack = new PrintStream(socketSaida.getOutputStream());

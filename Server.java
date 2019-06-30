@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import com.sun.glass.ui.Timer;
+
 public class Server {
 
 	/*
@@ -33,6 +35,7 @@ public class Server {
 		int port = 8888;
 		int porta = 8421;
 		Clientes clientes = new Clientes();
+		MensagensServidor mensagens = new MensagensServidor();
 		try {
 			ServerSocket tmpSocketIn = new ServerSocket(port);
 
@@ -80,6 +83,12 @@ class ReceiveMsg extends Thread {
 			String nome = entrada.readLine();
 			nome = nome.substring(1, nome.length());
 			saida.println("Pronto, comece a mandar suas mensagens!");
+			Timer timer;
+			for(int i = 0; i <  MensagensServidor.mensagens.size(); i++)
+			{
+				saida.println(MensagensServidor.mensagens.elementAt(i));
+				Thread.sleep(1);
+			}
 			usuarios.add(nome);
 			Clientes.clientes.add(saida);
 			String mensagem = "";
@@ -88,7 +97,7 @@ class ReceiveMsg extends Thread {
 			while (mensagem.charAt(0) != '4') {
 				if (mensagem.charAt(0) == '6') {
 					sendMessage(saida, nome, mensagem);
-					//System.out.println("Mensagem lida pelo cliente!");
+					System.out.println("Mensagem lida pelo cliente!");
 				}
 				else if (mensagem.charAt(0) == '1') {
 					sendMessage(saida, nome, mensagem);
@@ -96,9 +105,14 @@ class ReceiveMsg extends Thread {
 				}
 				else if (mensagem.charAt(0) == '2') {
 					int posicaoRemover = Integer.parseInt(mensagem.substring(1, mensagem.length()));
-					String removido = ReceiveMsg.mensagens.remove(posicaoRemover);
+					String removido = MensagensServidor.mensagens.remove(posicaoRemover);
 					System.out.println("Mensagem removida: " + removido);
 					Enumeration<PrintStream> e = Clientes.clientes.elements();
+					for (int i = 0; i < 100; i++)
+						System.out.println();
+					for (int i = 0; i < MensagensServidor.mensagens.size(); i++) {
+						System.out.println(MensagensServidor.mensagens.elementAt(i).substring(1, MensagensServidor.mensagens.elementAt(i).length()));
+					}
 					while (e.hasMoreElements()) {
 						PrintStream clienteMandar = (PrintStream) e.nextElement();
 						clienteMandar.println("3" + posicaoRemover);
@@ -108,6 +122,7 @@ class ReceiveMsg extends Thread {
 					PrintStream ack = new PrintStream(conexaoSaida.getOutputStream());
 					ack.println("5");
 					ReceiveMsg.mensagens.add(mensagem);
+					MensagensServidor.mensagens.add(mensagem);
 					System.out.println("Mensagem recebida: " + ReceiveMsg.mensagens.lastElement());
 					//saida.println(mensagem);
 					sendMessage(saida, nome  + ": " , mensagem);
@@ -145,3 +160,12 @@ class Clientes {
 		this.clientes = new Vector<PrintStream>();
 	}
 }
+
+class MensagensServidor {
+	public static Vector<String> mensagens;
+
+	public MensagensServidor() {
+		this.mensagens = new Vector<String>();
+	}
+}
+
