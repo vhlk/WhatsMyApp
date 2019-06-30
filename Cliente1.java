@@ -28,12 +28,9 @@ import java.util.Vector;
 public class Cliente1 {
 
 	/*
-	 * Flags utilizadas: 
-	 *  1: confirmação de recebimento pelo cliente
-	 *  2: mensagem de pedido de apagar mensagem
-	 *  3: apagar mensagem (seguido pela posicao a ser apagada)
-	 *  4: sair da conversa
-	 *  5: confirmação recebimento pelo servidor
+	 * Flags utilizadas: 1: confirmação de recebimento pelo cliente 2: mensagem de
+	 * pedido de apagar mensagem 3: apagar mensagem (seguido pela posicao a ser
+	 * apagada) 4: sair da conversa 5: confirmação recebimento pelo servidor
 	 */
 
 	public static void main(String args[]) throws IOException {
@@ -47,7 +44,7 @@ public class Cliente1 {
 			String clientMsg;
 			// DataOutputStream outputStream;
 			Mensagens mensagens = new Mensagens();
-			ReceiveThread rt = new ReceiveThread();
+			ReceiveThread rt = new ReceiveThread(socket);
 			rt.start();
 
 			while (true) {
@@ -85,8 +82,10 @@ public class Cliente1 {
 }
 
 class ReceiveThread extends Thread {
+	private Socket socketSaida;
 
-	public ReceiveThread() {
+	public ReceiveThread(Socket socket) {
+		this.socketSaida = socket;
 	}
 
 	public void run() {
@@ -103,29 +102,32 @@ class ReceiveThread extends Thread {
 			while (true) {
 				input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				serverMsg = input.readLine();
-				serverMsg = serverMsg.trim();
-				if (serverMsg.charAt(0) == '5') { //ack do server
+				if (serverMsg.charAt(0) == '5') { // ack do server
 					System.out.println("Mensagem recebida pelo servidor!");
 				}
-				if (serverMsg.charAt(0) == '3') { //apagar
-					for (int i = 0; i < 100; i++) System.out.println();
+				else if (serverMsg.charAt(0) == '3') { // apagar
+					for (int i = 0; i < 100; i++)
+						System.out.println();
 					int posicaoSerRemovida = Integer.parseInt(serverMsg.substring(1, serverMsg.length()));
 					Mensagens.mensagens.removeElementAt(posicaoSerRemovida);
 					for (int i = 0; i < Mensagens.mensagens.size(); i++) {
 						System.out.println(Mensagens.mensagens.elementAt(i));
 					}
 				} else {
-					if (!serverMsg.equals("Conectado, por favor digite seu nome:")) {
+					if (!serverMsg.equals("Conectado, por favor digite seu nome:")
+							&& !serverMsg.equals("Pronto, comece a mandar suas mensagens!")) {
 						Mensagens.mensagens.addElement(serverMsg);
+						PrintStream ack = new PrintStream(socketSaida.getOutputStream());
+						ack.println("1");
 					}
 					System.out.println(serverMsg);
-					ACKMensagemRecebidaCliente at = new ACKMensagemRecebidaCliente();
-					at.start();
+					//ACKMensagemRecebidaCliente at = new ACKMensagemRecebidaCliente();
+					//at.start();
 				}
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.err.println("Deu erro: "+e.getMessage());
 		}
 
 	}
@@ -146,7 +148,6 @@ class ACKMensagemRecebidaCliente extends Thread {
 			Socket socket = new Socket(address, port);
 
 			PrintStream saida = new PrintStream(socket.getOutputStream());
-			
 			saida.println("1");
 
 		} catch (Exception e) {
