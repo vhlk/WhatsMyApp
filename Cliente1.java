@@ -28,9 +28,12 @@ import java.util.Vector;
 public class Cliente1 {
 
 	/*
-	 * Flags utilizadas: 1: confirmação de recebimento pelo cliente 2: mensagem de
-	 * pedido de apagar mensagem 3: apagar mensagem (seguido pela posicao a ser
-	 * apagada) 4: sair da conversa 5: confirmação recebimento pelo servidor
+	 * Flags utilizadas: 
+	 * 		1: confirmação de recebimento pelo cliente 
+	 * 		2: mensagem de pedido de apagar mensagem 
+	 * 		3: apagar mensagem (seguido pela posicao a ser apagada) 
+	 * 		4: sair da conversa 
+	 * 		5: confirmação recebimento pelo servidor
 	 */
 
 	public static void main(String args[]) throws IOException {

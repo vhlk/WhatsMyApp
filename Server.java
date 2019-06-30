@@ -12,9 +12,12 @@ import java.util.Vector;
 public class Server {
 
 	/*
-	 * Flags utilizadas: 1: confirmação de recebimento pelo cliente 2: mensagem de
-	 * pedido de apagar mensagem 3: apagar mensagem (seguido pela posicao a ser
-	 * apagada) 4: sair da conversa 5: confirmação recebimento pelo servidor
+	 * Flags utilizadas: 
+	 * 		1: confirmação de recebimento pelo cliente 
+	 * 		2: mensagem de pedido de apagar mensagem 
+	 * 		3: apagar mensagem (seguido pela posicao a ser apagada) 
+	 * 		4: sair da conversa 
+	 * 		5: confirmação recebimento pelo servidor
 	 */
 
 	public static Vector<String> mensagens = new Vector<String>();
@@ -27,18 +30,19 @@ public class Server {
 
 	public static void main(String[] args) {
 		int port = 8888;
+		int porta = 8421;
 		try {
 			ServerSocket tmpSocketIn = new ServerSocket(port);
-			ServerSocket tmpSocketOut = new ServerSocket(8421);
 
 			while (true) {
 				System.out.println("Aguardando cliente");
+				ServerSocket tmpSocketOut = new ServerSocket(porta);
 				Socket socketIn = tmpSocketIn.accept();
 				Socket socketOut = tmpSocketOut.accept();
-				DataInputStream inputStream;
+				/*DataInputStream inputStream;
 				DataOutputStream outputStream;
 				String strData, ans;
-				/*
+				
 				 * inputStream = new DataInputStream(socketIn.getInputStream()); strData =
 				 * inputStream.readUTF(); strData = strData.trim();
 				 * 
@@ -58,6 +62,7 @@ public class Server {
 				PrintStream saida = new PrintStream(socketOut.getOutputStream());
 				// outputStream = new DataOutputStream(socketOut.getOutputStream());
 				System.out.println("Enviado");
+				porta++;
 
 			}
 
@@ -89,15 +94,15 @@ public class Server {
 }
 
 class ReceiveMsg extends Thread {
-	public static ArrayList<String> mensagens;
-	public static ArrayList<String> usuarios;
+	public static Vector<String> mensagens;
+	public static Vector<String> usuarios;
 
 	private Socket conexaoEntrada;
 	private Socket conexaoSaida;
 
 	public ReceiveMsg(Socket conexaoEntrada, Socket conexaoSaida) {
-		this.mensagens = new ArrayList<String>();
-		this.usuarios = new ArrayList<String>();
+		this.mensagens = new Vector<String>();
+		this.usuarios = new Vector<String>();
 		this.conexaoEntrada = conexaoEntrada;
 		this.conexaoSaida = conexaoSaida;
 	}
@@ -130,7 +135,7 @@ class ReceiveMsg extends Thread {
 					PrintStream ack = new PrintStream(conexaoSaida.getOutputStream());
 					ack.println("5");
 					ReceiveMsg.mensagens.add(mensagem);
-					System.out.println("Mensagem recebida: " + ReceiveMsg.mensagens.get(cont));
+					System.out.println("Mensagem recebida: " + ReceiveMsg.mensagens.lastElement());
 					saida.println(mensagem);
 					cont++;
 				}
