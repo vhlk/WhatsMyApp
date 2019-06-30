@@ -45,7 +45,6 @@ public class Cliente1 {
 			char flag = '0';
 			Scanner in = new Scanner(System.in);
 			String clientMsg;
-			// DataOutputStream outputStream;
 			Mensagens mensagens = new Mensagens();
 			ReceiveThread rt = new ReceiveThread(socket);
 			rt.start();
@@ -63,17 +62,8 @@ public class Cliente1 {
 					flag = '4';
 					System.out.println("Saiu da conversa!");
 				}
-				/*
-				 * outputStream = new DataOutputStream(socket.getOutputStream());
-				 * outputStream.writeUTF(flag + clientMsg); outputStream.flush();
-				 */
 				PrintStream saida = new PrintStream(socket.getOutputStream());
 				saida.println(flag + clientMsg);
-				/*
-				 * imprimir todas as mensagens do cliente for (int i = 0; i <
-				 * mensagens.mensagens.size(); i++) {
-				 * System.out.println(mensagens.mensagens.get(i)); }
-				 */
 				flag = '0';
 			}
 
@@ -99,7 +89,6 @@ class ReceiveThread extends Thread {
 			String address = "localhost";// host do servidor
 
 			BufferedReader input;
-			// DataInputStream inputStream;
 			Socket socket = new Socket(address, port);
 
 			while (true) {
@@ -124,37 +113,11 @@ class ReceiveThread extends Thread {
 						ack.println("1");
 					}
 					System.out.println(serverMsg);
-					//ACKMensagemRecebidaCliente at = new ACKMensagemRecebidaCliente();
-					//at.start();
 				}
 			}
 
 		} catch (Exception e) {
 			System.err.println("Deu erro: "+e.getMessage());
-		}
-
-	}
-}
-
-class ACKMensagemRecebidaCliente extends Thread {
-
-	public ACKMensagemRecebidaCliente() {
-	}
-
-	public void run() {
-
-		try {
-			// DataOutputStream outputStream;
-			int port = 8888;// Porta do servidor
-			String address = "localhost";// host do servidor
-
-			Socket socket = new Socket(address, port);
-
-			PrintStream saida = new PrintStream(socket.getOutputStream());
-			saida.println("1");
-
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 
 	}

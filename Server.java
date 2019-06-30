@@ -39,28 +39,8 @@ public class Server {
 				ServerSocket tmpSocketOut = new ServerSocket(porta);
 				Socket socketIn = tmpSocketIn.accept();
 				Socket socketOut = tmpSocketOut.accept();
-				/*DataInputStream inputStream;
-				DataOutputStream outputStream;
-				String strData, ans;
-				
-				 * inputStream = new DataInputStream(socketIn.getInputStream()); strData =
-				 * inputStream.readUTF(); strData = strData.trim();
-				 * 
-				 * System.out.println("Texto recebido do cliente: " + strData); if
-				 * (strData.charAt(0) == 1) { //1 -> ack p/ cliente ans = "ack"; } else if
-				 * (strData.charAt(0) == 2) { //2 -> apagar ans = "apagar" +
-				 * strData.substring(1, strData.length()); } else if
-				 * (strData.contains("InfraCom")) { ans =
-				 * "IF678, a disciplina de InfraEstrutura de Comunicacao ministrada pelo professor Paulo Goncalves "
-				 * ; } else if (strData.contains("Ola") || strData.contains("Oi")) { ans =
-				 * "Ola, como esta voce?s"; } else if (strData.contains("Tudo bem?")) { ans =
-				 * "Tudo, e com voce?"; } else if (strData.contains("Adriano")) { ans =
-				 * "O melhor monitor!"; } else { ans = "Mensagem recebida!"; }
-				 */
 				ReceiveMsg t = new ReceiveMsg(socketIn, socketOut);
-				t.start();
-				PrintStream saida = new PrintStream(socketOut.getOutputStream());
-				// outputStream = new DataOutputStream(socketOut.getOutputStream());
+				t.start()
 				System.out.println("Enviado");
 				porta++;
 
@@ -73,23 +53,6 @@ public class Server {
 		}
 
 	}
-
-	/*
-	 * public void run(Socket socketClient) { try { BufferedReader entrada = new
-	 * BufferedReader(new InputStreamReader(socketClient.getInputStream()));
-	 * PrintStream saida = new PrintStream(this.conexao.getOutputStream());
-	 * saida.println("Conectado"); mensagens.add(entrada.readLine());
-	 * System.out.println(entrada.readLine()); System.out.println(mensagens.get(0));
-	 * 
-	 * 
-	 * 
-	 * DataInputStream inputStream; String strData; inputStream = new
-	 * DataInputStream(socketClient.getInputStream()); strData =
-	 * inputStream.readUTF(); strData = strData.trim(); mensagens.add(strData);
-	 * System.out.println(mensagens.get(0)); System.out.println(strData);
-	 * 
-	 * } catch(Exception e) { System.out.println("Deu erro!"); } }
-	 */
 
 }
 
@@ -120,8 +83,6 @@ class ReceiveMsg extends Thread {
 			mensagem = entrada.readLine();
 			int cont = 0;
 			while (mensagem.charAt(0) != '4') {
-				//ACKMensagemRecebidaServer ack = new ACKMensagemRecebidaServer(this.conexaoSaida);
-				//ack.start();
 				if (mensagem.charAt(0) == '1') {
 					System.out.println("Mensagem Recebida pelo Cliente!");
 				}
@@ -147,32 +108,4 @@ class ReceiveMsg extends Thread {
 		}
 	}
 
-}
-
-class ACKMensagemRecebidaServer extends Thread {
-	private Socket saida;
-
-	public ACKMensagemRecebidaServer(Socket saida) {
-		this.saida = saida;
-	}
-
-	public void run() {
-
-		try {
-			// DataOutputStream outputStream;
-			PrintStream ack;
-			//int port = 8888;// Porta do servidor
-			String address = "localhost";// host do servidor
-
-			//Socket socket = new Socket(address, port);
-
-			ack = new PrintStream(this.saida.getOutputStream());
-			ack.println("5");
-			ack.flush();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
 }
