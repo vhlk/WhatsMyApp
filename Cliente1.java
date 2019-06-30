@@ -2,8 +2,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.net.*;
 import java.util.Scanner;
 import java.util.Vector;
@@ -42,7 +40,6 @@ public class Cliente1 {
 	public static void main(String args[]) throws IOException {
 		int port = 8888;// Porta do servidor
 		String address = "localhost";// host do servidor
-		char cliente = 'a';
 
 		try {
 			Socket socket = new Socket(address, port);
