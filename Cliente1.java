@@ -52,21 +52,31 @@ public class Cliente1 {
 			rt.start();
 
 			while (true) {
+				boolean podeApagar =  true;
 				clientMsg = in.nextLine();
 				if (clientMsg.equals("quero apagar")) {
 					System.out.println("Digite a posição da mensagem a ser apagada, por favor:");
 					flag = '2'; // flag para apagar
 					int posicao = in.nextInt();
 					in.nextLine();
+					if (Mensagens.mensagens.elementAt(posicao).charAt(0) == 'y') {
+						podeApagar = true;
+					}
+					else {
+						podeApagar = false;
+						System.err.println("Você não pode apagar uma mensagem que você não enviou!");
+					}
 					clientMsg = Integer.toString(posicao);
 				}
-				if (clientMsg.equals("quero sair")) {
+				else if (clientMsg.equals("quero sair")) {
 					flag = '4';
 					System.out.println("Saiu da conversa!");
 				}
+				else {
+					Mensagens.mensagens.add('y'+clientMsg);
+				}
 				PrintStream saida = new PrintStream(socket.getOutputStream());
-				Mensagens.mensagens.add('y'+clientMsg);
-				saida.println(flag + clientMsg);
+				if (podeApagar) saida.println(flag + clientMsg);
 				flag = '0';
 			}
 
@@ -108,15 +118,12 @@ class ReceiveThread extends Thread {
 				}
 				else if (serverMsg.charAt(0) == '3') { // apagar
 					int posicaoSerRemovida = Integer.parseInt(serverMsg.substring(1, serverMsg.length()));
-					if (Mensagens.mensagens.elementAt(posicaoSerRemovida).charAt(0) == 'y') {
-						Mensagens.mensagens.removeElementAt(posicaoSerRemovida);
-						for (int i = 0; i < 100; i++)
-							System.out.println();
-						for (int i = 0; i < Mensagens.mensagens.size(); i++) {
-							System.out.println(Mensagens.mensagens.elementAt(i).substring(1, Mensagens.mensagens.elementAt(i).length()));
-						}
+					Mensagens.mensagens.removeElementAt(posicaoSerRemovida);
+					for (int i = 0; i < 100; i++)
+						System.out.println();
+					for (int i = 0; i < Mensagens.mensagens.size(); i++) {
+						System.out.println(Mensagens.mensagens.elementAt(i).substring(1, Mensagens.mensagens.elementAt(i).length()));
 					}
-					else System.err.println("Você não pode apagar uma mensagem que você não enviou!");
 				} else {
 					if (!serverMsg.equals("Conectado, por favor digite seu nome:")
 							&& !serverMsg.equals("Pronto, comece a mandar suas mensagens!")) {
