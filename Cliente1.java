@@ -40,10 +40,11 @@ public class Cliente1 {
 	public static void main(String args[]) throws IOException {
 		int port = 8888;// Porta do servidor
 		String address = "localhost";// host do servidor
+		String flagCliente = "a"; //string para indicar o cliente
 
 		try {
 			Socket socket = new Socket(address, port);
-			char flag = '0';
+			String flag = "0";
 			Scanner in = new Scanner(System.in);
 			String clientMsg;
 			MensagensCliente1 mensagens = new MensagensCliente1(); //chama o construtor de mensagem, que guarda as mensagens do cliente
@@ -63,13 +64,13 @@ public class Cliente1 {
 				}
 				else if (!Cliente1.saiu && clientMsg.equals("quero apagar")) {  //caso esteja no chat e queira apagar uma mensagem que enviou
 					System.out.println("Digite a posição da mensagem a ser apagada, por favor:");
-					flag = '2'; // flag para apagar
+					flag = "2"; // flag para apagar
 					int posicao = in.nextInt(); //recebe a posição do vetor a ser apagada
 					in.nextLine(); //java e seus detalhes kkkk
 					if (MensagensCliente1.mensagens.size() < posicao) {
 						System.err.println("Você digitou uma posição inválida!");
 					}
-					else if (MensagensCliente1.mensagens.elementAt(posicao).charAt(0) == 'y') { //quando o cliente escreve uma mensagem, a flag será y (apenas o que vai ser salvo localmente)
+					else if (MensagensCliente1.mensagens.elementAt(posicao).charAt(1) == flagCliente.charAt(0)) { //quando o cliente escreve uma mensagem, a flag será y (apenas o que vai ser salvo localmente)
 						podeApagar = true;
 					}
 					else { //caso a flag não seja y, a mensagem n era dele
@@ -79,7 +80,7 @@ public class Cliente1 {
 					clientMsg = Integer.toString(posicao);
 				}
 				else if (clientMsg.equals("quero sair")) { //caso o cliente queira sair
-					flag = '4';
+					flag = "4";
 					System.out.println("Saiu da conversa!");
 					posicaoUltimaMensagem = MensagensCliente1.mensagens.size(); //salva a posição da última mensagem que recebeu
 					Cliente1.saiu = true;
@@ -87,19 +88,19 @@ public class Cliente1 {
 				else if (clientMsg.equals("quero me reconectar")) { //caso o cliente queira se reconectar
 					System.out.println("Reconectado com sucesso!");
 					saida.println("7"); //avisar ao server que o cliente deseja se reconectar
-					flag = '8';
+					flag = "8";
 					for (int i = posicaoUltimaMensagem; i < MensagensCliente1.mensagens.size();i++) { //caso alguma mensagem foi enviada para o cliente enquanto ele tinha saido, neste momento elas serão impressas
-						System.out.println(MensagensCliente2.mensagens.elementAt(i).substring(1, MensagensCliente1.mensagens.elementAt(i).length()));
+						System.out.println(MensagensCliente1.mensagens.elementAt(i).substring(2, MensagensCliente1.mensagens.elementAt(i).length()));
 						saida.println("1"); //para cada mensagem recebida, mandamos acks
 						saida.println("6");
 					}
 					Cliente1.saiu = false;
 				}
 				else if (!Cliente1.saiu && cont != 0){ //caso o cliente não tenha saido e a mensagem não seja a primeira (nome), salvamos no vetor do cliente a mensagem
-					MensagensCliente1.mensagens.add('y'+nome+": "+clientMsg);
+					MensagensCliente1.mensagens.add(flag + flagCliente + nome + ": "+clientMsg);
 				}
-				if (podeApagar) saida.println(flag + clientMsg); //caso não esteja tentando apagar uma posiçaõ não válida, mensagem é enviada ao server (qualquer tipo de mensagem)
-				flag = '0';
+				if (podeApagar) saida.println(flag + flagCliente + clientMsg); //caso não esteja tentando apagar uma posição não válida, mensagem é enviada ao server (qualquer tipo de mensagem)
+				flag = "0";
 				cont = 1;
 			}
 
@@ -145,7 +146,7 @@ class ReceiveThreadCliente1 extends Thread {
 					for (int i = 0; i < 100; i++) //"limpa" o console
 						System.out.println(); 
 					for (int i = 0; i < MensagensCliente1.mensagens.size(); i++) {  //imprime as mensagens novamente
-						System.out.println(MensagensCliente1.mensagens.elementAt(i).substring(1, MensagensCliente1.mensagens.elementAt(i).length())); //imprime sem as flags, obviamente
+						System.out.println(MensagensCliente1.mensagens.elementAt(i).substring(2, MensagensCliente1.mensagens.elementAt(i).length())); //imprime sem as flags, obviamente
 					}
 				} else {
 					if (serverMsg != null && serverMsg.length() > 0 && !serverMsg.equals("Conectado, por favor digite seu nome:")
@@ -154,7 +155,7 @@ class ReceiveThreadCliente1 extends Thread {
 						PrintStream ack = new PrintStream(socketSaida.getOutputStream());
 						ack.println("1"); //mandamos acks
 						ack.println("6");
-						serverMsg = serverMsg.substring(1, serverMsg.length()); //tiramos a flag
+						serverMsg = serverMsg.substring(2, serverMsg.length()); //tiramos as flags
 					}
 					if (!Cliente1.saiu) System.out.println(serverMsg);
 				}

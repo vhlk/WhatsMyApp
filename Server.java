@@ -74,7 +74,7 @@ class ReceiveMsg extends Thread {
 			PrintStream saida = new PrintStream(this.conexaoSaida.getOutputStream()); //criamos um printStream que irá mandar as mensagens para o cliente usando o OutPutStream
 			saida.println("Conectado, por favor digite seu nome:"); //mandará mensagem pedindo para o cliente digitar seu nome
 			String nome = entrada.readLine();  //recebe nome do cliente com flag
-			nome = nome.substring(1, nome.length()); //retira flag
+			nome = nome.substring(2, nome.length()); //retira flag
 			saida.println("Pronto, comece a mandar suas mensagens!");
 			for(int i = 0; i <  MensagensServidor.mensagens.size(); i++)  //caso o cliente estava offline e mandaram mensagem para ele, aqui o server envia quando ele se conectar
 			{
@@ -98,22 +98,34 @@ class ReceiveMsg extends Thread {
 					System.out.println("Cliente saiu!");
 				}
 				else if (!saiu && mensagem.charAt(0) == '6') {  //6: lido pelo cliente
-					sendMessage(saida, nome, mensagem); //reaproveito o método apenas para enviar uma mensagem com flag 6
+					Enumeration<PrintStream> e = Clientes.clientes.elements(); //pega todos os elementos (PrintStream)
+					while (e.hasMoreElements()) { //isso está explicado no sendMessage
+						PrintStream outroCLiente = (PrintStream) e.nextElement();
+						if (outroCLiente != saida) {
+							outroCLiente.println("6");
+						}
+					}
 					System.out.println("Mensagem lida pelo cliente!");
 				}
 				else if (!saiu && mensagem.charAt(0) == '1') {  //1: confirmação de recebimento pelo cliente
-					sendMessage(saida, nome, mensagem);  //novamente reaproveito para mandar mensagem com flag 1
+					Enumeration<PrintStream> e = Clientes.clientes.elements(); //pega todos os elementos (PrintStream)
+					while (e.hasMoreElements()) { //isso está explicado no sendMessage
+						PrintStream outroCLiente = (PrintStream) e.nextElement();
+						if (outroCLiente != saida) {
+							outroCLiente.println("1");
+						}
+					}
 					System.out.println("Mensagem recebida pelo cliente!");
 				}
 				else if (!saiu && mensagem.charAt(0) == '2') {  //2: mensagem de pedido de apagar mensagem
-					int posicaoRemover = Integer.parseInt(mensagem.substring(1, mensagem.length())); //a mensagem sem flag é o índice da posição a ser removida
+					int posicaoRemover = Integer.parseInt(mensagem.substring(2, mensagem.length())); //a mensagem sem flags é o índice da posição a ser removida
 					String removido = MensagensServidor.mensagens.remove(posicaoRemover); //remove do server a mensagem que consta naquela posição
 					System.out.println("Mensagem removida: " + removido);
 					Enumeration<PrintStream> e = Clientes.clientes.elements(); //pego todos os PrintStreams (por onde a mensagem sai)
 					for (int i = 0; i < 100; i++)  //"limpar" console
 						System.out.println();
 					for (int i = 0; i < MensagensServidor.mensagens.size(); i++) { //reimprime as mensagens (sem a que foi apagada)
-						System.out.println(MensagensServidor.mensagens.elementAt(i).substring(1, MensagensServidor.mensagens.elementAt(i).length()));
+						System.out.println(MensagensServidor.mensagens.elementAt(i).substring(2, MensagensServidor.mensagens.elementAt(i).length()));
 					}
 					while (e.hasMoreElements()) { //manda sinal de apagar para todos os clientes
 						PrintStream clienteMandar = (PrintStream) e.nextElement();
@@ -125,7 +137,7 @@ class ReceiveMsg extends Thread {
 					PrintStream ack = new PrintStream(conexaoSaida.getOutputStream()); //criei outro PrintStream para não ficar confuso
 					ack.println("5"); //mandar ack de mensagem recebida
 					ReceiveMsg.mensagens.add(mensagem); //a mensagem é adiciona ao vetor da thread
-					MensagensServidor.mensagens.add(mensagem.charAt(0)+nome+": "+mensagem.substring(1, mensagem.length())); //server armazena a mensagem sem a flag e com o nome do cliente
+					MensagensServidor.mensagens.add(String.valueOf(mensagem.charAt(0))+String.valueOf(mensagem.charAt(1))+nome+": "+mensagem.substring(2, mensagem.length())); //server armazena a mensagem sem a flag e com o nome do cliente
 					System.out.println("Mensagem recebida: " + ReceiveMsg.mensagens.lastElement());
 					//saida.println(mensagem);
 					sendMessage(saida, nome  + ": " , mensagem); //chama o método que vai mandar mensagem apenas para o outro cliente
@@ -147,9 +159,10 @@ class ReceiveMsg extends Thread {
 				PrintStream outroCLiente = (PrintStream) e.nextElement();
 				// envia para todos, menos para o próprio usuário
 				if (outroCLiente != saida) { //se não for o PrintStream do usuário atual significa que é o outro, então manda para ele a mensagem
-					char flag = mensagem.charAt(0);
-					String dadoMensagem = mensagem.substring(1, mensagem.length()); //separar mensagem da flag
-					outroCLiente.println(flag + autor + dadoMensagem);
+					String flag = String.valueOf(mensagem.charAt(0));
+					String flagCliente = String.valueOf(mensagem.charAt(1));
+					String dadoMensagem = mensagem.substring(2, mensagem.length()); //separar mensagem da flag
+					outroCLiente.println(flag + flagCliente + autor + dadoMensagem);
 				}
 			}
 		} catch (Exception e) { System.out.println(e.getMessage());}
