@@ -23,7 +23,7 @@ import java.util.Vector;
  *		Victor Hugo de Lima Kunst
  */
 
-public class Cliente1 {
+public class Cliente2 {
 	public static boolean saiu;
 	/*
 	 * Flags utilizadas: 
@@ -46,8 +46,8 @@ public class Cliente1 {
 			char flag = '0';
 			Scanner in = new Scanner(System.in);
 			String clientMsg;
-			MensagensCliente1 mensagens = new MensagensCliente1(); //chama o construtor de mensagem, que guarda as mensagens do cliente
-			ReceiveThreadCliente1 rt = new ReceiveThreadCliente1(socket); //cria a thread de receber mensagens
+			MensagensCliente2 mensagens = new MensagensCliente2(); //chama o construtor de mensagem, que guarda as mensagens do cliente
+			ReceiveThreadCliente2 rt = new ReceiveThreadCliente2(socket); //cria a thread de receber mensagens
 			rt.start(); //coloca a thread para rodar
 			int cont = 0; //caso o cliente saia da conversa, esse int indica a última mensagem recebida
 			String nome = "";
@@ -66,10 +66,10 @@ public class Cliente1 {
 					flag = '2'; // flag para apagar
 					int posicao = in.nextInt(); //recebe a posição do vetor a ser apagada
 					in.nextLine(); //java e seus detalhes kkkk
-					if (MensagensCliente1.mensagens.size() < posicao) {
+					if (MensagensCliente2.mensagens.size() < posicao) {
 						System.err.println("Você digitou uma posição inválida!");
 					}
-					else if (MensagensCliente1.mensagens.elementAt(posicao).charAt(0) == 'y') { //quando o cliente escreve uma mensagem, a flag será y (apenas o que vai ser salvo localmente)
+					else if (MensagensCliente2.mensagens.elementAt(posicao).charAt(0) == 'y') { //quando o cliente escreve uma mensagem, a flag será y (apenas o que vai ser salvo localmente)
 						podeApagar = true;
 					}
 					else { //caso a flag não seja y, a mensagem n era dele
@@ -81,22 +81,22 @@ public class Cliente1 {
 				else if (clientMsg.equals("quero sair")) { //caso o cliente queira sair
 					flag = '4';
 					System.out.println("Saiu da conversa!");
-					posicaoUltimaMensagem = MensagensCliente1.mensagens.size(); //salva a posição da última mensagem que recebeu
+					posicaoUltimaMensagem = MensagensCliente2.mensagens.size(); //salva a posição da última mensagem que recebeu
 					Cliente1.saiu = true;
 				}
 				else if (clientMsg.equals("quero me reconectar")) { //caso o cliente queira se reconectar
 					System.out.println("Reconectado com sucesso!");
 					saida.println("7"); //avisar ao server que o cliente deseja se reconectar
 					flag = '8';
-					for (int i = posicaoUltimaMensagem; i < MensagensCliente1.mensagens.size();i++) { //caso alguma mensagem foi enviada para o cliente enquanto ele tinha saido, neste momento elas serão impressas
-						System.out.println(MensagensCliente2.mensagens.elementAt(i).substring(1, MensagensCliente1.mensagens.elementAt(i).length()));
+					for (int i = posicaoUltimaMensagem; i < MensagensCliente2.mensagens.size();i++) { //caso alguma mensagem foi enviada para o cliente enquanto ele tinha saido, neste momento elas serão impressas
+						System.out.println(MensagensCliente2.mensagens.elementAt(i).substring(1, MensagensCliente2.mensagens.elementAt(i).length()));
 						saida.println("1"); //para cada mensagem recebida, mandamos acks
 						saida.println("6");
 					}
 					Cliente1.saiu = false;
 				}
 				else if (!Cliente1.saiu && cont != 0){ //caso o cliente não tenha saido e a mensagem não seja a primeira (nome), salvamos no vetor do cliente a mensagem
-					MensagensCliente1.mensagens.add('y'+nome+": "+clientMsg);
+					MensagensCliente2.mensagens.add('y'+nome+": "+clientMsg);
 				}
 				if (podeApagar) saida.println(flag + clientMsg); //caso não esteja tentando apagar uma posiçaõ não válida, mensagem é enviada ao server (qualquer tipo de mensagem)
 				flag = '0';
@@ -110,10 +110,10 @@ public class Cliente1 {
 	}
 }
 
-class ReceiveThreadCliente1 extends Thread {
+class ReceiveThreadCliente2 extends Thread {
 	private Socket socketSaida;
 
-	public ReceiveThreadCliente1(Socket socket) {
+	public ReceiveThreadCliente2(Socket socket) {
 		this.socketSaida = socket;
 	}
 
@@ -121,7 +121,7 @@ class ReceiveThreadCliente1 extends Thread {
 
 		try {
 			String serverMsg;
-			int port = 8421; //Porta do cliente: primeiro cliente a se conectar terá porta 8421, segundo cliente, 8422
+			int port = 8422; //Porta do cliente: primeiro cliente a se conectar terá porta 8421, segundo cliente, 8422
 			String address = "localhost";// host do servidor
 
 			BufferedReader input;
@@ -141,16 +141,16 @@ class ReceiveThreadCliente1 extends Thread {
 				}
 				else if (serverMsg != null && serverMsg.length() > 0 && serverMsg.charAt(0) == '3') { //recebe do server que deve apagar uma mensagem (pode ser o próprio pedido do cliente)
 					int posicaoSerRemovida = Integer.parseInt(serverMsg.substring(1, serverMsg.length())); //pega a mensagem sem a flag (índice a remover)
-					MensagensCliente1.mensagens.removeElementAt(posicaoSerRemovida); //remove a mensagem daquela posição do array
+					MensagensCliente2.mensagens.removeElementAt(posicaoSerRemovida); //remove a mensagem daquela posição do array
 					for (int i = 0; i < 100; i++) //"limpa" o console
 						System.out.println(); 
-					for (int i = 0; i < MensagensCliente1.mensagens.size(); i++) {  //imprime as mensagens novamente
-						System.out.println(MensagensCliente1.mensagens.elementAt(i).substring(1, MensagensCliente1.mensagens.elementAt(i).length())); //imprime sem as flags, obviamente
+					for (int i = 0; i < MensagensCliente2.mensagens.size(); i++) {  //imprime as mensagens novamente
+						System.out.println(MensagensCliente2.mensagens.elementAt(i).substring(1, MensagensCliente2.mensagens.elementAt(i).length())); //imprime sem as flags, obviamente
 					}
 				} else {
 					if (serverMsg != null && serverMsg.length() > 0 && !serverMsg.equals("Conectado, por favor digite seu nome:")
 							&& !serverMsg.equals("Pronto, comece a mandar suas mensagens!")) { //caso não seja essas mensagens do server, será uma mensagem do outro cliente
-						MensagensCliente1.mensagens.addElement(serverMsg); //então adicionamos a mensagem ao vetor
+						MensagensCliente2.mensagens.addElement(serverMsg); //então adicionamos a mensagem ao vetor
 						PrintStream ack = new PrintStream(socketSaida.getOutputStream());
 						ack.println("1"); //mandamos acks
 						ack.println("6");
@@ -167,10 +167,10 @@ class ReceiveThreadCliente1 extends Thread {
 	}
 }
 
-class MensagensCliente1 { //server apenas como um local global para guardar mensagens
+class MensagensCliente2 { //server apenas como um local global para guardar mensagens
 	public static Vector<String> mensagens;
 
-	public MensagensCliente1() {
+	public MensagensCliente2() {
 		this.mensagens = new Vector<String>();
 	}
 }

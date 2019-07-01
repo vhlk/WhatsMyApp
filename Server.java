@@ -47,7 +47,7 @@ public class Server {
 		} catch (BindException e) {
 			System.out.println("Endereco em uso");
 		} catch (Exception e) {
-			System.out.println("Erro" + e);
+			System.out.println("Erro" + e.getMessage());
 		}
 
 	}
