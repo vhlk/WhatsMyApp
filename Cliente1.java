@@ -93,7 +93,7 @@ public class Cliente1 {
 					for (int i = posicaoUltimaMensagem; i < MensagensCliente1.mensagens.size();i++) { //caso alguma mensagem foi enviada para o cliente enquanto ele tinha saido, neste momento elas serão impressas
 						System.out.println(MensagensCliente1.mensagens.elementAt(i).substring(2, MensagensCliente1.mensagens.elementAt(i).length()));
 						saida.println("1"); //para cada mensagem recebida, mandamos acks
-						saida.println("6");
+						//saida.println("6");
 					}
 					Cliente1.saiu = false;
 				}
@@ -154,8 +154,8 @@ class ReceiveThreadCliente1 extends Thread {
 							&& !serverMsg.equals("Pronto, comece a mandar suas mensagens!")) { //caso não seja essas mensagens do server, será uma mensagem do outro cliente
 						MensagensCliente1.mensagens.addElement(serverMsg); //então adicionamos a mensagem ao vetor
 						PrintStream ack = new PrintStream(socketSaida.getOutputStream());
-						ack.println("1"); //mandamos acks
-						ack.println("6");
+						ack.println("1"); //mandamos acks		
+						//ack.println("6");
 						serverMsg = serverMsg.substring(2, serverMsg.length()); //tiramos as flags
 					}
 					if (!Cliente1.saiu) System.out.println(serverMsg);
