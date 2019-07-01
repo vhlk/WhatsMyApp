@@ -67,8 +67,9 @@ public class Cliente1 {
 					flag = "2"; // flag para apagar
 					int posicao = in.nextInt(); //recebe a posição do vetor a ser apagada
 					in.nextLine(); //java e seus detalhes kkkk
-					if (MensagensCliente1.mensagens.size() < posicao) {
+					if (MensagensCliente1.mensagens.size() <= posicao) {
 						System.err.println("Você digitou uma posição inválida!");
+						podeApagar = false;
 					}
 					else if (MensagensCliente1.mensagens.elementAt(posicao).charAt(1) == flagCliente.charAt(0)) { //quando o cliente escreve uma mensagem, a flag será y (apenas o que vai ser salvo localmente)
 						podeApagar = true;
