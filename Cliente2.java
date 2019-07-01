@@ -122,7 +122,7 @@ class ReceiveThreadCliente2 extends Thread {
 
 		try {
 			String serverMsg;
-			int port = 8423; //Porta do cliente: primeiro cliente a se conectar terá porta 8421, segundo cliente, 8422
+			int port = 8422; //Porta do cliente: primeiro cliente a se conectar terá porta 8421, segundo cliente, 8422
 			String address = "localhost";// host do servidor
 
 			BufferedReader input;

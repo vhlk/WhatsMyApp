@@ -103,6 +103,7 @@ class ReceiveMsg extends Thread {
 						PrintStream outroCLiente = (PrintStream) e.nextElement();
 						if (outroCLiente != saida) {
 							outroCLiente.println("6");
+							outroCLiente.flush();
 						}
 					}
 					System.out.println("Mensagem lida pelo cliente!");
@@ -113,6 +114,7 @@ class ReceiveMsg extends Thread {
 						PrintStream outroCLiente = (PrintStream) e.nextElement();
 						if (outroCLiente != saida) {
 							outroCLiente.println("1");
+							outroCLiente.flush();
 						}
 					}
 					System.out.println("Mensagem recebida pelo cliente!");
@@ -143,6 +145,7 @@ class ReceiveMsg extends Thread {
 					sendMessage(saida, nome  + ": " , mensagem); //chama o método que vai mandar mensagem apenas para o outro cliente
 					cont++;
 				}
+				saida.flush();
 				mensagem = entrada.readLine();
 			}
 			//System.out.println("Sai da conversa");
