@@ -73,9 +73,11 @@ class ReceiveMsg extends Thread {
 			BufferedReader entrada = new BufferedReader(new InputStreamReader(this.conexaoEntrada.getInputStream())); //criamos um buffer para receber as mensagens
 			PrintStream saida = new PrintStream(this.conexaoSaida.getOutputStream()); //criamos um printStream que ir� mandar as mensagens para o cliente usando o OutPutStream
 			saida.println("Conectado, por favor digite seu nome:"); //mandar� mensagem pedindo para o cliente digitar seu nome
+			saida.flush();
 			String nome = entrada.readLine();  //recebe nome do cliente com flag
 			nome = nome.substring(2, nome.length()); //retira flag
 			saida.println("Pronto, comece a mandar suas mensagens!");
+			saida.flush();
 			for(int i = 0; i <  MensagensServidor.mensagens.size(); i++)  //caso o cliente estava offline e mandaram mensagem para ele, aqui o server envia quando ele se conectar
 			{
 				Thread.sleep(100);
@@ -132,6 +134,7 @@ class ReceiveMsg extends Thread {
 					while (e.hasMoreElements()) { //manda sinal de apagar para todos os clientes
 						PrintStream clienteMandar = (PrintStream) e.nextElement();
 						clienteMandar.println("3" + posicaoRemover);
+						clienteMandar.flush();
 					}
 					cont--;
 				} 
